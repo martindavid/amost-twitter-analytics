@@ -1,0 +1,12 @@
+*.pyc
+
+dist/
+build/
+*.egg-info/
+
+.tox/
+.coverage
+
+
+.DS_Store
+.vscode/
