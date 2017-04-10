@@ -4,56 +4,74 @@ import logging
 from pprint import pprint
 from datetime import datetime
 from time import sleep
+from app.db import DB, Keyword, TwitterToken
+from app.tweet_store import TweetStore
+import settings
 
+MAX_COUNT = 100
 
-class TwitterHarvester(object):
+class TwitterSearch(object):
     """Main class to handle harvesting twitter data
 
     Args:
-        token: TwitterToken object contain token data from database
-        keyword_list: list of Keyword object contain keyword data from database
+        group_name: group name used to filter the keyword
 
     Attributes:
         api: tweepy.API object
         keyword_list: list of keyword object from Keyword class
+        tw_store = TweetStore instance (manage data access to couchdb)
     """
 
-    def __init__(self, token, keyword_list):
+    def __init__(self, group_name):
+
+        database = DB(settings.PG_DB_USER, settings.PG_DB_PASSWORD, settings.PG_DB_NAME)
+        database.connect()
+
+        keyword = Keyword(database.con, database.meta)
+        token = TwitterToken(database.con, database.meta)
+
         """Set tweepy api object and authentication"""
+        token = token.find_by_group(group_name)
         auth = tweepy.OAuthHandler(token["consumer_key"], token["consumer_secret"])
         auth.set_access_token(token["access_token"], token["access_token_secret"])
 
         self.api = tweepy.API(auth)
-        self.keyword_list = keyword_list
+        self.keyword_list = keyword.find_by_group(group_name)
+        self.tw_store = TweetStore('tweets', settings.COUCHDB_SERVER)
 
     def execute(self):
+        """Execute the twitter crawler, loop into the keyword_list"""
         for keyword in self.keyword_list:
             logging.info('Crawl data for %s' % keyword["keyword"])
             self.crawl(keyword)
 
     def crawl(self, keyword):
+        """ Crawl individual keyword """
         api = self.api
         max_id = -1
-        since_id = keyword["since_id"]
         count = 1
-        tweets = api.search(q=keyword["keyword"], include_entities=False, \
-                                lang="en", count=10)
+        tweets = api.search(q=keyword["keyword"], include_entities=True, \
+                                lang="en", count=MAX_COUNT)
         for tweet in tweets:
-            if count == 10:
+            if count == MAX_COUNT:
                 max_id = tweet.id
-            #logging.info('%d. %s - %s' % (count, tweet.id, tweet.text))
+
+            self.tw_store.save_tweet(tweet)
+
             count = count + 1
-        limit = api.last_response #.getheader('x-rate-limit-remaining')
-        logging.info(limit)
-        # while True:
-        #     count = 1
-        #     cursor = api.search(q=keyword["keyword"], include_entities=False, \
-        #                     lang="en", count=10, max_id=max_id-1)
-        #     for tweet in cursor:
-        #         if count == 10:
-        #             max_id = tweet.id
-        #         logging.info('%d. %s - %s' % (count, tweet.id, tweet.text))
-        #         count = count + 1
+            self.test_rate_limit(api)
+
+        while True:
+            count = 1
+            cursor = api.search(q=keyword["keyword"], include_entities=True, \
+                            lang="en", count=MAX_COUNT, max_id=max_id-1)
+            for tweet in cursor:
+                if count == MAX_COUNT:
+                    max_id = tweet.id
+                self.tw_store.save_tweet(tweet)
+
+                count = count + 1
+            self.test_rate_limit(api)
 
 
     def test_rate_limit(self, api, wait=True, buffer=.1):
