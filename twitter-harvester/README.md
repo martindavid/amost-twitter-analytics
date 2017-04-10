@@ -2,16 +2,16 @@
 
 A harvester for twitter data
 
+# Prerequisites Stack
+Make sure you have this stack installed on your machine first
+- [Postgresql](https://www.postgresql.org/)
+- [CouchDB](http://couchdb.apache.org/)
 
 # Installation
+If you have `virtualenv` for python, it will make your life easier.
 
-If you don't use `pipsi`, you're missing out.
-Here are [installation instructions](https://github.com/mitsuhiko/pipsi#readme).
-
-Simply run:
-
-    $ pipsi install .
-
+Simply run from:
+`$ pip install -r requirements.txt`
 
 # Usage
 
