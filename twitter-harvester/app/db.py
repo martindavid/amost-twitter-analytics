@@ -102,6 +102,7 @@ class Keyword(object):
             update_stmt = self.data.update().\
                                     where(self.data.c.id == keyword_id).\
                                     values(since_id=since_id)
+            self.con.execute(update_stmt)
         except Exception as ex:
             logging.error(ex)
 

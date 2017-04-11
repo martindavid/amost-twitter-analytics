@@ -5,8 +5,8 @@ create table keyword
 			primary key,
 	keyword varchar(50) default ''::character varying,
 	keyword_group varchar(50) default ''::character varying,
-	max_id integer default '-1'::integer,
-	since_id integer default '-1'::integer
+	max_id bigint default '-1'::integer,
+	since_id bigint default '-1'::integer
 )
 ;
 
