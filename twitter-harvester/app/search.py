@@ -36,6 +36,7 @@ class TwitterSearch(object):
         auth.set_access_token(token["access_token"], token["access_token_secret"])
 
         self.api = tweepy.API(auth)
+        self.keyword = keyword
         self.keyword_list = keyword.find_by_group(group_name)
         self.tw_store = TweetStore('tweets', settings.COUCHDB_SERVER)
 
@@ -48,29 +49,30 @@ class TwitterSearch(object):
     def crawl(self, keyword):
         """ Crawl individual keyword """
         api = self.api
-        max_id = -1
-        count = 1
+        max_id = 0
+        since_id = keyword["since_id"]
         tweets = api.search(q=keyword["keyword"], include_entities=True, \
-                                lang="en", count=MAX_COUNT)
-        for tweet in tweets:
-            if count == MAX_COUNT:
-                max_id = tweet.id
-
-            self.tw_store.save_tweet(tweet)
-
-            count = count + 1
-            self.test_rate_limit(api)
-
-        while True:
-            count = 1
-            cursor = api.search(q=keyword["keyword"], include_entities=True, \
-                            lang="en", count=MAX_COUNT, max_id=max_id-1)
-            for tweet in cursor:
-                if count == MAX_COUNT:
+                                lang="en", count=MAX_COUNT, since_id=since_id)
+        if len(tweets) > 0:
+            self.keyword.update_since_id(keyword["id"], tweets[0].id)
+            for i, tweet in enumerate(tweets):
+                if i == MAX_COUNT - 1:
                     max_id = tweet.id
                 self.tw_store.save_tweet(tweet)
 
-                count = count + 1
+        while True:
+            tweets = api.search(q=keyword["keyword"], include_entities=True, \
+                            lang="en", count=MAX_COUNT, max_id=max_id-1)
+
+            # Check if the api return value, otherwise break from loop
+            # continue crawl next keyword
+            if len(tweets) > 0:
+                for i, tweet in enumerate(tweets):
+                    if i == MAX_COUNT - 1:
+                        max_id = tweet.id
+                    self.tw_store.save_tweet(tweet)
+            else:
+                break
             self.test_rate_limit(api)
 
 
