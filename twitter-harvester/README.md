@@ -6,9 +6,21 @@ A harvester for twitter data
 Make sure you have this stack installed on your machine first
 - [Postgresql](https://www.postgresql.org/)
 - [CouchDB](http://couchdb.apache.org/)
+- [PSequel](http://www.psequel.com/) => If you don't want to manage your postgresql from command line
 - Python 3.5
 
 # Installation
+### Install PostgreSQL using brew
+Thanks God if you're on osx machine, just run this command to install it:
+```bash
+$ brew install postgresql
+```
+
+After it succesfully installed, start the service by:
+```bash
+$ brew services start postgresql
+```
+
 ### Setup Python and VirtualEnv
 VirtualEnv is a way to create isolated Python environments for every project and VirtualEnvWrapper "wraps" the virtualenv API to make it more user friendly.
 
@@ -30,6 +42,25 @@ The following commands will ensure you have the Python dependencies installed in
 ```bash
 mkvirtualenv amost-project --python=python3
 pip install -r requirements.txt
+```
+
+### Run Database Structure Creation
+Run `create.sql` file under db_structure folder to initiate the postgresql structure for the first time (make sure your postgresql database is running)
+
+### Initial data setup
+* Use psequel to easily insert/update postgresql data
+* Get twitter API token from [twitter developer](https://dev.twitter.com/)
+* Put twitter api token information inside `twitter_token` table
+
+
+#### Run it from command line
+
+```bash
+# create new database name amost_twitter
+$ createdb amost_twitter
+
+# run create.sql file
+$ psql -f db_structure/create.sql amost_twitter
 ```
 
 # Usage
