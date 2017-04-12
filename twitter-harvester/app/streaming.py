@@ -1,89 +1,97 @@
-import os, sys, time, json, couchdb, tweepy 
-from couchdb.mapping import Document, TextField, FloatField
-#from meaningcloud_client import sendPost
+import tweepy 
+import json
+from time import sleep
+from TwitterAPI import TwitterAPI
+from tweepy.streaming import StreamListener
+from app.db import DB, Keyword, TwitterToken
+from app.tweet_store import TweetStore
+import settings
 
-consumer_token = 'ifIEMehY2FZKYygyzdkCtzVHx'
-consumer_secret = 'gkvEmZFKIIlIuVDBniV2grfvXw8GBj3pfNzLXVPNHpw2fjCSOQ'
-
-access_token = "1646962993-MMYcOwuSDiAZyDFDTI5tXzSy7yoH6ybJiiMr7OR"
-access_token_secret = "HC1qOFT5Qu7scrcfJRXPdDqzBulM4RZ22xlKIiVEwopb6"
-
-#handles authentication 
-auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-"""
-myStreamListener = MyStreamListener()
-myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener())
-myStream.filter(track=['python'], async=True)
-"""
-#set up couchdb (local version)
-db_name = 'amost_twitter'
-server_location = "http://localhost:5984/"
-couch = couchdb.Server(server_location)
-db = couch[db_name]
-
-class listener(x):
-    # A listener handles tweets received from the stream.
-    # This is a custom listener that store received tweets to FILE.
-    def on_data(self, tweet_data):
-        try:
-            #converts to json format then saves in couchdb
-            tweets_json = json.loads(tweet_data)
-            doc_id = tweets_json["id_str"]
-            tweet_lang = tweets_json["lang"]
-            #gets data from meaningcloud service
-            """
-            meaningcloud_data = sendPost(tweets_json["text"], tweet_lang)
-            if meaningcloud_data is None:
-                #if invalid language, topic and sentiment is not added to document
-                doc = {"_id": doc_id, "tweet_data": tweets_json}
-            else:
-                sentiment_topic = meaningcloud_data.read()
-                r = json.loads(sentiment_topic.decode())
-
-                #handling of API call limit
-                counter = int(r["status"]["remaining_credits"])
-                if counter < 100:
-                    print ("There are less than 100 API calls left on the current account.
-                            Please insert a new key in meaningcloud_client.py")
-                elif counter < 10:
-                    print ("There are less than 10 API calls left on the current account.
-                            Please insert a new key in meaningcloud_client.py")
-                    print ("Terminating...")
-                    sys.exit(0)
-
-                #id of the document is the tweet id
-                #meaningcloud data is added as attribute in the document
-                doc = {"_id": doc_id, "tweet_data": tweets_json, "meaningcloud": r}
-            """
-            #saves the document to database
-            db.save(doc)
-            print('added: ' + doc_id)
-            return True
-        except BaseException as e:
-            print(e)
-            time.sleep(5)
-        except couchdb.http.ResourceConflict:
-            #handles duplicates
-            time.sleep(5)
-
-    def on_error(self,status):
-        #returning False in on_data disconnects the stream
-        if status_code == 420:
-            print(status)
-            return False
-
-def main():
-    print("Streaming is started.... Ctrl+C to abort.")
-    try:
-        twitterStream = Stream(auth,listener())
-        twitterStream.filter(track=['python'], async=True)
-    except Exception as e:
-        print (e)
-        print("Error or execution finished. Program exiting... ")
-        twitterStream.disconnect()
-
-main() 
- 
-
+consumer_key = 'nyR8ejR7Z7LftoDYRoyusn2jg'
+consumer_secret = 'lLlxxKAOd3DyIGTLVgq1Mwy8hOnsGPCTroBhAIbgqB31Dbp0WT'
+access_token_key = '851934201506971648-TTEeRvC5pcTBu5GGl9LV1yqANvRMVu1'
+access_token_secret = 'tyZVYaNiPm2bMjjo4bkEuGwABUHoBITlrnWnDEENqKZSl'
     
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token_key, access_token_secret)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+
+# Create a class inheriting from StreamListener
+class TwitterStream(StreamListener):
+    def __init__(self, api = None):
+        self.api = api
+
+    def on_data(self, data):
+        print "Hello!!!"
+        if 'in_reply_to_status' in data:
+            self.on_status(data)
+        elif 'delete' in data:
+            delete = json.loads(data)['delete']['status']
+            if self.on_delete(delete['id'], delete['user_id']) is False:
+                return False
+        elif 'limit' in data:
+            if self.on_limit(json.loads(data)['limit']['track']) is False:
+                return False
+        elif 'warning' in data:
+            warning = json.loads(data)['warnings']
+            print warning['message']
+            return false
+
+    def on_status(self, status):
+        print status 
+
+    def on_error(self, status):
+        if status == 420:
+            print status
+            self.on_timeout()
+ 
+    def on_timeout(self):
+        print("Timeout, sleeping for 10 sec...\n")
+        time.sleep(10)
+        return 
+
+def stream_crawl(keyword):   
+    loop = True
+    while (loop):
+        track = keyword
+        listen = TwitterStream(api)  
+        stream = tweepy.Stream(auth, listen) 
+
+        print ("Twitter streaming started... ")
+
+        try:
+            stream.filter(track=[keyword])
+            loop = False
+        except:
+            print ("Error!...Retry after 10 sec")
+            loop = True
+            stream.disconnect()
+            sleep(10)
+            continue
+
+if __name__ == '__main__': 
+    stream_crawl( "python" )
+
+
+   
+       
+
+
+
+   
+
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
