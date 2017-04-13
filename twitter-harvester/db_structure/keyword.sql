@@ -1,0 +1,14 @@
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (2, 'food', 'GROUP2', -1, 852529564198866944);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (1, 'music', 'GROUP3', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (3, 'health', 'GROUP3', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (4, 'entertainment', 'GROUP3', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (5, '#easter', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (6, 'beer', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (7, 'easter', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (8, '"Happy Easter"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (9, '"tv series"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (10, '"rock music"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (11, '"pop music"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (12, '"jazz music"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (13, '"music bar"', 'GROUP1', -1, -1);
+INSERT INTO public.keyword (id, keyword, keyword_group, max_id, since_id) VALUES (14, '"music cafe"', 'GROUP1', -1, -1);
