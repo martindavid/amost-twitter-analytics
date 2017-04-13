@@ -1,10 +1,14 @@
 appdirs==1.4.3
+click==6.7
+CouchDB==1.1
 oauthlib==2.0.2
 packaging==16.8
 psycopg2==2.7.1
 pyparsing==2.2.0
+python-dotenv==0.6.4
 requests==2.13.0
 requests-oauthlib==0.8.0
 six==1.10.0
 SQLAlchemy==1.1.9
 tweepy==3.5.0
+TwitterAPI==2.4.5

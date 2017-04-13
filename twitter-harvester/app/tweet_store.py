@@ -1,3 +1,4 @@
+from __future__ import print_function
 import couchdb
 import json
 
@@ -30,8 +31,10 @@ class TweetStore(object):
         Args:
             twitter: tweepy status object
         """
-        json_data = json.loads(twitter)
-        print(json_data)
+        if isinstance(twitter, dict):
+            json_data = twitter
+        else:
+            json_data = json.loads(twitter)
         doc = self.dbase.get(json_data["id_str"])
         if doc is None:
             try:

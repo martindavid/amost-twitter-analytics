@@ -3,9 +3,10 @@ import sys
 import argparse
 import logging
 from app.search import TwitterSearch
-from app.streaming import TwitterStreamExe
+from app.streaming import TwitterStreamRunner
 
 def main(args, loglevel):
+    """ Main method"""
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
     group_name = args.group
@@ -15,37 +16,38 @@ def main(args, loglevel):
         crawler = TwitterSearch(group_name)
         crawler.execute()
     elif app_type == 'stream':
-        crawler = TwitterStreamExe(group_name)
+        crawler = TwitterStreamRunner(group_name)
         crawler.execute()
 
 # Standard boilerplate to call the main() function to begin the program.
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
+    PARSER = argparse.ArgumentParser(
         description="A CLI app to harvest twitter data and store it in CouchDB",
         fromfile_prefix_chars='@')
 
-    parser.add_argument(
+    PARSER.add_argument(
         "type",
         help="Type of script Search API/Streaming API",
         metavar="TYPE"
     )
 
-    parser.add_argument(
+    PARSER.add_argument(
         "group",
         help="The group of keywords",
         metavar="GROUP")
 
-    parser.add_argument(
+    PARSER.add_argument(
         "-v",
         "--verbose",
         help="increase output verbosity",
         action="store_true")
-    args = parser.parse_args()
+
+    ARGS = PARSER.parse_args()
 
     # Setup logging
-    if args.verbose:
-        loglevel = logging.DEBUG
+    if ARGS.verbose:
+        LOG_LEVEL = logging.DEBUG
     else:
-        loglevel = logging.INFO
+        LOG_LEVEL = logging.INFO
 
-    main(args, loglevel)
+    main(ARGS, LOG_LEVEL)

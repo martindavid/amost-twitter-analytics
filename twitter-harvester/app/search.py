@@ -49,16 +49,18 @@ class TwitterSearch(object):
     def crawl(self, keyword):
         """ Crawl individual keyword """
         api = self.api
-        max_id = 0
+        max_id = -1
         since_id = keyword["since_id"]
         tweets = api.search(q=keyword["keyword"], include_entities=True, \
                                 lang="en", count=MAX_COUNT, since_id=since_id)
+
+        # For the first time, run the search using since_id from database
+        # update since_id in database with the first tweet id that we get
         if len(tweets) > 0:
-            self.keyword.update_since_id(keyword["id"], tweets[0].id)
-            for i, tweet in enumerate(tweets):
-                if i == MAX_COUNT - 1:
-                    max_id = tweet.id
-                self.tw_store.save_tweet(tweet)
+            #self.keyword.update_since_id(keyword["id"], tweets[0].id)
+            for tweet in tweets:
+                self.tw_store.save_tweet(tweet._json)
+            max_id = tweets[-1].id
 
         while True:
             tweets = api.search(q=keyword["keyword"], include_entities=True, \
@@ -67,10 +69,9 @@ class TwitterSearch(object):
             # Check if the api return value, otherwise break from loop
             # continue crawl next keyword
             if len(tweets) > 0:
-                for i, tweet in enumerate(tweets):
-                    if i == MAX_COUNT - 1:
-                        max_id = tweet.id
-                    self.tw_store.save_tweet(tweet)
+                for tweet in tweets:
+                    self.tw_store.save_tweet(tweet._json)
+                max_id = tweets[-1].id
             else:
                 break
             self.test_rate_limit(api)
