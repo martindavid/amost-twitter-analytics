@@ -1,7 +1,6 @@
 import tweepy 
 import json
 from time import sleep
-from TwitterAPI import TwitterAPI
 from tweepy.streaming import StreamListener
 import logging
 from app.db import DB, Keyword, TwitterToken
@@ -10,6 +9,10 @@ import settings
 
 # Create a class inheriting from StreamListener
 class TwitterStream(StreamListener): 
+    def __init__(self, api, tw_store):
+        self.api = api
+        self.tw_store = tw_store
+
     def on_data(self, data):
         print("Hello!!!")
         if 'in_reply_to_status' in data:
@@ -27,8 +30,9 @@ class TwitterStream(StreamListener):
             return false
 
     def on_status(self, status):
+        print("It's in On Status")
+        #print(status)
         self.tw_store.save_tweet(status)
-        print(status)
 
     def on_error(self, status):
         if status == 420:
@@ -41,6 +45,7 @@ class TwitterStream(StreamListener):
         return 
 
 class TwitterStreamExe(object): 
+
     def __init__(self, group_name):
         database = DB(settings.PG_DB_USER, settings.PG_DB_PASSWORD, settings.PG_DB_NAME)
         database.connect()
@@ -67,17 +72,16 @@ class TwitterStreamExe(object):
     def crawl(self, keyword):   
         loop = True
         while (loop):
-            listen = TwitterStream(self.api) 
+            listen = TwitterStream(self.api, self.tw_store) 
             track = keyword 
             stream = tweepy.Stream(self.auth, listen) 
 
             # print ("Twitter streaming started... ")
 
             try:
-                stream.filter(track=[keyword])
+                stream.filter(track=keyword)
                 loop = False
-            except:
-                # print ("Error!...Retry after 10 sec")
+            except: 
                 loop = True
                 stream.disconnect()
                 sleep(10)

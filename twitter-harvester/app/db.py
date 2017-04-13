@@ -1,7 +1,6 @@
 import sqlalchemy
 import logging
 
-
 class DB(object):
     """ Main class to handle connection to database
 
