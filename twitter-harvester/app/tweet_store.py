@@ -1,4 +1,5 @@
 import couchdb
+import json
 
 DEFAULT_URL = 'http://127.0.0.1:5984/'
 
@@ -29,9 +30,12 @@ class TweetStore(object):
         Args:
             twitter: tweepy status object
         """
-        json_data = twitter._json
-        tweet_id = str(twitter.id)
-        doc = self.dbase.get(tweet_id)
+        json_data = json.loads(twitter)
+        print(json_data)
+        doc = self.dbase.get(json_data["id_str"])
         if doc is None:
-            json_data["_id"] = tweet_id
-            self.dbase.save(json_data)
+            try:
+                json_data["_id"] = json_data["id_str"]
+                self.dbase.save(json_data)
+            except Exception as e:
+                print(e)
