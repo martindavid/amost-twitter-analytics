@@ -1,5 +1,6 @@
 import sqlalchemy
 import logging
+import datetime
 
 class DB(object):
     """ Main class to handle connection to database
@@ -100,7 +101,8 @@ class Keyword(object):
         try:
             update_stmt = self.data.update().\
                                     where(self.data.c.id == keyword_id).\
-                                    values(since_id=since_id)
+                                    values(since_id=since_id, \
+                                    updated_at=str(datetime.datetime.now()))
             self.con.execute(update_stmt)
         except Exception as ex:
             logging.error(ex)
