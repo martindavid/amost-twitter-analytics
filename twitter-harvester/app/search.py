@@ -42,9 +42,15 @@ class TwitterSearch(object):
 
     def execute(self):
         """Execute the twitter crawler, loop into the keyword_list"""
-        for keyword in self.keyword_list:
-            logging.info('Crawl data for %s' % keyword["keyword"])
-            self.crawl(keyword)
+        while True:
+            for keyword in self.keyword_list:
+                logging.info('Crawl data for %s' % keyword["keyword"])
+                self.crawl(keyword)
+            # Sleep for 10 minutes after finishing crawl all of the keyword,
+            # and start over again
+            delay = 600
+            print("Sleeping for {}s...".format(delay))
+            sleep(delay)
 
     def crawl(self, keyword):
         """ Crawl individual keyword """
