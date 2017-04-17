@@ -1,11 +1,11 @@
 from __future__ import print_function
-import tweepy
 import logging
-from pprint import pprint
 from datetime import datetime
 from time import sleep
+import tweepy
 from app.db import DB, Keyword, TwitterToken
 from app.tweet_store import TweetStore
+from app.logger import LOGGER as log
 import settings
 
 MAX_COUNT = 100
@@ -43,12 +43,17 @@ class TwitterSearch(object):
     def execute(self):
         """Execute the twitter crawler, loop into the keyword_list"""
         while True:
+            delay = 600
             for keyword in self.keyword_list:
-                logging.info('Crawl data for %s' % keyword["keyword"])
-                self.crawl(keyword)
+                log.info('Crawl data for %s', keyword["keyword"])
+                try:
+                    self.crawl(keyword)
+                except Exception as e:
+                    log.error('Error in Crawling process', exc_info=True)
+                    print("Sleeping for {}s...".format(delay))
+                    sleep(delay)
             # Sleep for 10 minutes after finishing crawl all of the keyword,
             # and start over again
-            delay = 600
             print("Sleeping for {}s...".format(delay))
             sleep(delay)
 
@@ -66,8 +71,12 @@ class TwitterSearch(object):
         if len(tweets) > 0:
             self.keyword.update_since_id(keyword["id"], tweets[0].id)
             for tweet in tweets:
+                # If we have reach the since_id, break from loop
+                if tweet.id == since_id:
+                    break
                 self.tw_store.save_tweet(tweet._json)
             max_id = tweets[-1].id
+            self.test_rate_limit(api)
         else:
             return
 
@@ -80,6 +89,9 @@ class TwitterSearch(object):
             # continue crawl next keyword
             if len(tweets) > 0:
                 for tweet in tweets:
+                    # If we have reach the since_id, break from loop
+                    if tweet.id == since_id:
+                        break
                     self.tw_store.save_tweet(tweet._json)
                 max_id = tweets[-1].id
             else:
