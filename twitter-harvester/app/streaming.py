@@ -44,7 +44,8 @@ class TwitterStream(StreamListener):
 
     def on_timeout(self):
         """ Handle time out when API reach its limit """
-        time.sleep(10)
+        log.info("API Reach its limit, sleep for 10 minutes")
+        time.sleep(600)
         return
 
 
@@ -85,8 +86,10 @@ class TwitterStreamRunner(object):
         loop = True
         while loop:
             try:
+                log.info("Start stream tweets data")
                 stream.filter(locations=AUS_GEO_CODE)
                 loop = False
+                log.info("End stream tweets data")
             except Exception as e:
                 log.error("There's an error, sleep for 10 minutes")
                 log.error(e)
