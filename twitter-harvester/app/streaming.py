@@ -1,12 +1,15 @@
 from __future__ import print_function
 import json
-import logging
 import time
 import tweepy
 from tweepy.streaming import StreamListener
+from app.logger import LOGGER as log
 from app.db import DB, Keyword, TwitterToken
 from app.tweet_store import TweetStore
 import settings
+
+# Get the box coordinates from http://boundingbox.klokantech.com/
+AUS_GEO_CODE = [113.03, -39.06, 154.73, -12.28]
 
 class TwitterStream(StreamListener):
     """A listener class that will listen twitter streaming data"""
@@ -27,7 +30,7 @@ class TwitterStream(StreamListener):
                 return False
         elif 'warning' in data:
             warning = json.loads(data)['warnings']
-            logging.warning(warning['message'])
+            log.warning(warning['message'])
             return False
 
     def on_status(self, status):
@@ -82,12 +85,12 @@ class TwitterStreamRunner(object):
         loop = True
         while loop:
             try:
-                print(self.keywords)
-                stream.filter(track=self.keywords)
+                stream.filter(locations=AUS_GEO_CODE)
                 loop = False
             except Exception as e:
-                logging.error(e)
+                log.error("There's an error, sleep for 10 minutes")
+                log.error(e)
                 loop = True
                 stream.disconnect()
-                time.sleep(10)
+                time.sleep(600)
                 continue
