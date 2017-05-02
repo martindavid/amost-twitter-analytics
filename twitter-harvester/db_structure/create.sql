@@ -6,7 +6,8 @@ create table keyword
 	keyword varchar(50) default ''::character varying,
 	keyword_group varchar(50) default ''::character varying,
 	max_id bigint default '-1'::integer,
-	since_id bigint default '-1'::integer
+	since_id bigint default '-1'::integer,
+	updated_at timestamp default now()
 )
 ;
 
