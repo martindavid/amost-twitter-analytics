@@ -4,7 +4,7 @@ Settings enabling access to CCC team's NeCTAR account
 '''
 
 #----Customizable Info-------------------------------------------
-SECS_TO_WAIT = 30
+SECS_TO_WAIT = 40
 
 #Instance region and NeCTAR API address
 API_ENDPOINT = 'nova.rc.nectar.org.au'
@@ -22,7 +22,7 @@ SEC_GROUP = ['SSH']
     #NeCTAR Ubuntu 16.04 LTS (Xenial) amd64 (pre-installed murano-agent)
 IMAGE = 'ami-c163b887'
 
-VOL_SIZE = 5 # in GB
+VOL_SIZE = 35 # in GB
 VOL_ZONE = 'melbourne-qh2'
 VOL_TYPE = 'melbourne'
 #----------------------------------------------------------------

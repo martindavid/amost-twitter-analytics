@@ -124,11 +124,7 @@ def print_vol_info(api_connection):
         print(volume.status)
         print(volume.zone)
 
-def attach_volume(api_connection, volume_id, instance_id, path):
-    """
-    Attach volume
-    """
-    return api_connection.attach_volume(volume_id, instance_id, path)
+
 
 def main():
     """
@@ -157,8 +153,8 @@ def main():
     res = update_res_info(api_conn, new_reservation)
     print_instance_info(res)
 
-    #Attach volume
-    if attach_volume(api_conn, vol_req.id, res.instances[0].id, "/dev/vdc"):
+    #Attach volume; path doesn't seem to work - NeCTAR doesn't care
+    if api_conn.attach_volume(vol_req.id, res.instances[0].id, "/dev/vdc"):
         print("Volume attached successfully.")
 
 if __name__ == '__main__':
