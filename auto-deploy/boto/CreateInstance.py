@@ -8,8 +8,11 @@ S1, 2017
 
 import boto
 from boto.ec2.regioninfo import RegionInfo
+import time
 
 #----Customizable Info-------------------------------------------
+SECS_TO_WAIT = 20
+
 #Instance region and NeCTAR API address
 API_ENDPOINT = 'nova.rc.nectar.org.au'
 API_REGION = 'melbourne-np'
@@ -86,6 +89,10 @@ def kill_instance(api_connection, instance_id):
     api_connection.terminate_instances(instance_ids=[instance_id])
 
 def update_res_info(api_connection, old_res):
+    """
+    Updates the reservation info as the old one...
+    ...may not have all details e.g. IP and Zone
+    """
     reservations = api_connection.get_all_reservations()
     for res in reservations:
         if res.id == old_res.id:
@@ -118,7 +125,7 @@ def main():
     print("New instance created.")
 
     #wait for some time while the new instance gets its IP addr
-    #???
+    time.sleep(SECS_TO_WAIT)
 
     #get current reservation's info
     res = update_res_info(api_conn, new_reservation)
@@ -128,10 +135,10 @@ def main():
     print("Zone: ", res.instances[0].placement)
 
     #Create a volume
-    vol_req = api_conn.create_volume(VOL_SIZE, VOL_REGION)
+    #vol_req = api_conn.create_volume(VOL_SIZE, VOL_REGION)
 
     #Print info on all volumes
-    print_vol_info(api_conn, vol_req)
+    #print_vol_info(api_conn, vol_req)
 
     #Attach volume
     #if (attach_volume(api_conn, vol.id, inst.id, "/dev/vdc")):
