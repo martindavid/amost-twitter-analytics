@@ -1,0 +1,8 @@
+# Commands that need to run following provisioning
+
+# Format and mount volume on vm
+
+sudo mkfs.ext4 /dev/vdb
+sudo mkdir /mnt/storage
+sudo mount /dev/vdb /mnt/storage
+

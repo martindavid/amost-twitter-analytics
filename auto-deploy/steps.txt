@@ -1,0 +1,16 @@
+BOTO
+- Launch VM [done]
+- create volume [done]
+- attach volume to VM [done]
+
+sh
+- format volume
+- mount volume
+
+Ansible
+- install CouchDB
+- install PostgreSQL
+- change WD of both onto volume
+
+- download harvester appl from GitHub
+- launch harvester

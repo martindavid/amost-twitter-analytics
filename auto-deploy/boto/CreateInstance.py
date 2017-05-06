@@ -2,36 +2,40 @@
 
 """
 Boto script to provision an instance on NeCTAR Research Cloud
-@author: abhi
+@author: Abhi
 S1, 2017
 """
-
+import time
 import boto
 from boto.ec2.regioninfo import RegionInfo
-import time
 
-#----Customizable Info-------------------------------------------
-SECS_TO_WAIT = 20
+#-----------CHANGE THIS TO CORRECT SETTINGS FILE--------------
+import AMOSTSettings as info
+#-------------------------------------------------------------
+
+#----Customize Info-------------------------------------------
+SECS_TO_WAIT = info.SECS_TO_WAIT
 
 #Instance region and NeCTAR API address
-API_ENDPOINT = 'nova.rc.nectar.org.au'
-API_REGION = 'melbourne-np'
-API_PORT = 8773
+API_ENDPOINT = info.API_ENDPOINT
+API_REGION = info.API_REGION
+API_PORT = info.API_PORT
 
 #NeCTAR account details
-ACCESS_KEY_ID = '7abc3190c5174cbaaff56f5d0dc8495a'
-SECRET_ACCESS_KEY = '1ffe7072e5c449caba861460179435ea'
+ACCESS_KEY_ID = info.ACCESS_KEY_ID
+SECRET_ACCESS_KEY = info.SECRET_ACCESS_KEY
 
 #Instance details
-KEY = 'abhi-1'
-I_TYPE = 'm2.tiny'
-SEC_GROUP = ['ssh']
+KEY = info.KEY
+I_TYPE = info.I_TYPE
+SEC_GROUP = info.SEC_GROUP
     #NeCTAR Ubuntu 16.04 LTS (Xenial) amd64 (pre-installed murano-agent)
-IMAGE = 'ami-c163b887'
+IMAGE = info.IMAGE
 
-VOL_SIZE = 30 # in GB
-VOL_REGION = 'melbourne-np'
-#----------------------------------------------------------------
+VOL_SIZE = info.VOL_SIZE # in GB
+VOL_ZONE = info.VOL_ZONE
+VOL_TYPE = info.VOL_TYPE
+#-------------------------------------------------------------
 
 def connect_to_api():
     """
@@ -57,7 +61,7 @@ def print_premade_images(api_conn):
 
 def print_current_instances(api_connection):
     """
-    Prints info about each instance running on the account
+    Prints ab infoout each instance running on the account
     """
     reservations = api_connection.get_all_reservations()
 
@@ -72,15 +76,28 @@ def print_current_instances(api_connection):
         print("IP: ", reservation.instances[0].private_ip_address)
         print("Zone: ", reservation.instances[0].placement)
 
-def create_instance(api_connection, image, key, i_type, sec_group):
+def print_instance_info(res):
+    """
+    Prints out basic info of the first instance in a reservation
+    """
+    print()
+    print("New instance created with the following details:")
+    print("Private IP: ", res.instances[0].private_ip_address)
+    print("Zone: ", res.instances[0].placement)
+    print("ID: ", res.instances[0].id)
+    print("Key: ", res.instances[0].key_name)
+    print()
+
+def create_instance(api_connection):
     """
     Creates an instance on the cloud
     """
     return api_connection.run_instances(
-        image,
-        key_name=key,
-        instance_type=i_type,
-        security_groups=sec_group)
+        IMAGE,
+        key_name=KEY,
+        instance_type=I_TYPE,
+        security_groups=SEC_GROUP,
+        placement=API_REGION)
 
 def kill_instance(api_connection, instance_id):
     """
@@ -98,11 +115,11 @@ def update_res_info(api_connection, old_res):
         if res.id == old_res.id:
             return res
 
-def print_vol_info(api_connection, volume_request):
+def print_vol_info(api_connection):
     """
     Prints info on all volumes
     """
-    volumes = api_connection.get_all_volumes([volume_request.id])[0]
+    volumes = api_connection.get_all_volumes()
     for volume in volumes:
         print(volume.status)
         print(volume.zone)
@@ -117,33 +134,32 @@ def main():
     """
     Main func
     """
-    # Establish connection to API gateway
+    # abnfolish connection to API gateway
     api_conn = connect_to_api()
+    print("Connected to NeCTAR API")
 
     # Create a new instance; contains res.id
-    new_reservation = create_instance(api_conn, IMAGE, KEY, I_TYPE, SEC_GROUP)
-    print("New instance created.")
-
-    #wait for some time while the new instance gets its IP addr
-    time.sleep(SECS_TO_WAIT)
-
-    #get current reservation's info
-    res = update_res_info(api_conn, new_reservation)
-
-    #print new instance's info
-    print("IP: ", res.instances[0].private_ip_address)
-    print("Zone: ", res.instances[0].placement)
+    new_reservation = create_instance(api_conn)
+    print("Instance launched.")
 
     #Create a volume
-    #vol_req = api_conn.create_volume(VOL_SIZE, VOL_REGION)
+    vol_req = api_conn.create_volume(
+        VOL_SIZE, VOL_ZONE, volume_type=VOL_TYPE)
+    print(
+        "Volume", vol_req.id, "of size", vol_req.size,
+        "GB created in", vol_req.zone)
 
-    #Print info on all volumes
-    #print_vol_info(api_conn, vol_req)
+    #wait for some time while instance & vol initialize
+    print("Waiting for the dust to settle...")
+    time.sleep(SECS_TO_WAIT)
+
+    #get & print current reservation's info
+    res = update_res_info(api_conn, new_reservation)
+    print_instance_info(res)
 
     #Attach volume
-    #if (attach_volume(api_conn, vol.id, inst.id, "/dev/vdc")):
-    #   print("Volume attached successfully.")
-
+    if attach_volume(api_conn, vol_req.id, res.instances[0].id, "/dev/vdc"):
+        print("Volume attached successfully.")
 
 if __name__ == '__main__':
     main()
