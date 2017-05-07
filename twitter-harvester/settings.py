@@ -14,6 +14,7 @@ PG_DB_PASSWORD = os.environ.get('PG_DB_PASSWORD')
 
 # CouchDB configuration
 COUCHDB_SERVER = os.environ.get('COUCHDB_SERVER')
+COUCHDB_DB = os.environ.get('COUCHDB_DB')
 
 # Twitter Geo Location
 GEO_CODE = os.environ.get('GEO_CODE')

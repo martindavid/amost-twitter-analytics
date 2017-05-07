@@ -70,11 +70,12 @@ Create new file `.env` in the twitter-harvester root folder and put this informa
 PG_DB_USER='<your postgresql database username>'
 PG_DB_PASSWORD='<your postgresql database password>'
 PG_DB_NAME='<your postgresql database name>'
+COUCHDB_DB='tweets'
 COUCHDB_SERVER='<couchdb connection url>' #default 'http://127.0.0.1:5984/'
+GEO_CODE='-26.288798,134.494629,1500km' # our search area 
 ```
 
 Run the sql script in the `db_structure` folder and fill in the data you need for test.
-(TODO: find a better way to distribute the db structure)
 
 To run the app:
 
@@ -82,5 +83,10 @@ To run the app:
 
 Example:
 
+### Search API
+
     $ python cli.py search GROUP1
 
+### Stream API
+
+    $ python cli.py stream GROUP1

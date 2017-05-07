@@ -6,6 +6,7 @@ from tweepy.streaming import StreamListener
 from app.logger import LOGGER as log
 from app.db import DB, Keyword, TwitterToken
 from app.tweet_store import TweetStore
+from app.sentiment_analysis import SentimentAnalysis
 import settings
 
 # Get the box coordinates from http://boundingbox.klokantech.com/
@@ -35,7 +36,13 @@ class TwitterStream(StreamListener):
 
     def on_status(self, status):
         """ Handle logic when the data coming """
-        self.tw_store.save_tweet(status)
+        try:
+            tweet = json.loads(status)
+            # Update sentiment score
+            tweet["sentiment"] = SentimentAnalysis.get_sentiment(tweet_text=tweet["text"])
+            self.tw_store.save_tweet(tweet)
+        except Exception as e:
+            log.error(e)
 
     def on_error(self, status):
         """ Handle any error throws from stream API """
@@ -76,7 +83,7 @@ class TwitterStreamRunner(object):
         # Construct keywords array from keyword_list dict
         self.keywords = [keyword["keyword"] for keyword in keyword_list]
 
-        self.tw_store = TweetStore('tweets', settings.COUCHDB_SERVER)
+        self.tw_store = TweetStore(settings.COUCHDB_DB, settings.COUCHDB_SERVER)
 
     def execute(self):
         """Execute the twitter crawler, loop into the keyword_list
