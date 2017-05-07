@@ -1,0 +1,24 @@
+---
+- name: format volume and mount
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+  - name: format volume
+    filesystem:
+      fstype: ext4
+      dev: /dev/vdb
+  
+  - name: create mount dir
+    file:
+      path: /mnt/storage
+      state: directory
+
+  - name: mount volume
+    mount:
+      path: /mnt/storage
+      src: /dev/vdb
+      fstype: ext4
+      state: mounted
+      

@@ -155,7 +155,7 @@ def main():
     print_instance_info(res)
 
     #Attach volume; path doesn't seem to work - NeCTAR doesn't care
-    if api_conn.attach_volume(vol_req.id, res.instances[0].id, "/dev/vdc"):
+    if api_conn.attach_volume(vol_req.id, res.instances[0].id, "/dev/vdb"):
         print("Volume attached successfully.")
 
 if __name__ == '__main__':

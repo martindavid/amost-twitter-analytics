@@ -1,9 +1,6 @@
-[amost-r1]
-115.146.89.29
-
 [all:vars]
 ansible_user=ubuntu
 ansible_ssh_private_key_file=~/.ssh/amost-1.pem
 
-[CCC]
+[DB]
 115.146.90.197

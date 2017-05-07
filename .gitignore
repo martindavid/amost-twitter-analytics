@@ -91,3 +91,6 @@ ENV/
 
 .DS_Store
 .vscode
+
+# Personal test files
+/auto-deploy/boto/AbhiSettings.py
