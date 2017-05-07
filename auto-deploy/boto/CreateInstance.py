@@ -130,7 +130,8 @@ def main():
     """
     Main func
     """
-    # abnfolish connection to API gateway
+
+    # Establish connection to API gateway
     api_conn = connect_to_api()
     print("Connected to NeCTAR API")
 

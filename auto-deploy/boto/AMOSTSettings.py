@@ -4,7 +4,7 @@ Settings enabling access to CCC team's NeCTAR account
 '''
 
 #----Customizable Info-------------------------------------------
-SECS_TO_WAIT = 40
+SECS_TO_WAIT = 50
 
 #Instance region and NeCTAR API address
 API_ENDPOINT = 'nova.rc.nectar.org.au'
