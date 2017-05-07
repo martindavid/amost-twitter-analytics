@@ -7,6 +7,7 @@ import tweepy
 from app.db import DB, Keyword, TwitterToken
 from app.tweet_store import TweetStore
 from app.logger import LOGGER as log
+from app.sentiment_analysis import SentimentAnalysis
 import settings
 
 MAX_COUNT = 100
@@ -42,7 +43,7 @@ class TwitterSearch(object):
         self.api = tweepy.API(auth)
         self.keyword = keyword
         self.keyword_list = keyword.find_by_group(group_name)
-        self.tw_store = TweetStore('tweets', settings.COUCHDB_SERVER)
+        self.tw_store = TweetStore(settings.COUCHDB_DB, settings.COUCHDB_SERVER)
 
     def execute(self):
         """Execute the twitter crawler, loop into the keyword_list"""
@@ -79,6 +80,8 @@ class TwitterSearch(object):
                 # If we have reach the since_id, break from loop
                 if tweet.id == since_id:
                     break
+                # Update sentiment score
+                tweet._json["sentiment"] = SentimentAnalysis.get_sentiment(tweet_text=tweet.text)
                 self.tw_store.save_tweet(tweet._json)
             max_id = tweets[-1].id
             self.test_rate_limit(api)
@@ -97,6 +100,8 @@ class TwitterSearch(object):
                     # If we have reach the since_id, break from loop
                     if tweet.id == since_id:
                         break
+                    # Update sentiment score
+                    tweet._json["sentiment"] = SentimentAnalysis.get_sentiment(tweet_text=tweet.text)
                     self.tw_store.save_tweet(tweet._json)
                 max_id = tweets[-1].id
             else:
