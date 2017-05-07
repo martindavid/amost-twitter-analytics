@@ -22,3 +22,7 @@ for row in db_time.view('_design/foo/_view/daytime'):
         sum_afternoon += row.value
     elif 0 <= hour <= 5 or 19 <= hour <= 23:
         sum_night += row.value 
+        
+db_con['morning'] = dict(sum=sum_morning)
+db_con['afternon'] = dict(sum=sum_afternoon)
+db_con['night'] = dict(sum=sum_night)
