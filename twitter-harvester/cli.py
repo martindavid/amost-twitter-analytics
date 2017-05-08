@@ -7,6 +7,7 @@ import logging
 from app.search import TwitterSearch
 from app.streaming import TwitterStreamRunner
 
+
 def main(args, loglevel):
     """ Main method"""
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
