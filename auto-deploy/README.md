@@ -1,5 +1,6 @@
 ## TODO
-- Add arguments to script to run ```CreateInstance.py``` **N** times for each machine.
+- add provisioning of all 3 machines with the right software for each.
+- Change instance flavour from ```m2.tiny``` to ```m2.medium```.
 ---
 
 Ensure that:
@@ -23,17 +24,41 @@ Script: ```CreateInstance.py```
     
 ### **Ansible**
 - _ping all hosts_
-- _format + mount volume_ 
+- _format + mount volume_ [all]
     ```bash
     sudo mkfs.ext4 /dev/vdb
     sudo mkdir /mnt/storage
     sudo mount /dev/vdb /mnt/storage
     ```
-- _install CouchDB 1.6_
-- install PostgreSQL
-- change WD of both onto volume
+- _install CouchDB 1.6_ [harvester + analyser]
+    ```bash
+    sudo add-apt-repository ppa:couchdb/stable
+    sudo apt-get install couchdb
 
-- download harvester appl from GitHub
-- launch harvester
+    sudo chown -R couchdb:couchdb /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+    sudo chmod -R 0777 /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+    sudo systemctl restart couchdb
+    ```
+    - _change WD of CouchDB to volume_
+    ```bash
+    curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
+    curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
+    ```
+- _install PostgreSQL_  [harvester]
+    - DB: ```public```
+    - UN: ```amost```
+    - PW: ```amostsecretpassword```
+
+- download harvester appl from GitHub   [harvester]
+    ```bash
+    git clone <repo>
+    ```
+
+    - launch harvester
+    ```bash
+    nohup <file>.py &
+    ```
+- setup **replication** between CouchDB on ```harvester``` and ```analyser```
+- install ```htttpd``` on webserver
 
 _Italics_ refer to tasks that have been implemented.

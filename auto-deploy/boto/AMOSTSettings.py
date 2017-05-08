@@ -17,7 +17,7 @@ SECRET_ACCESS_KEY = '4554aa0701ba43a5aa2eba1dbe5947b2'
 
 #Instance details
 KEY = 'amost-1'
-I_TYPE = 'm2.tiny'
+I_TYPE = 'm2.tiny'  #Use m2.medium before deploying
 SEC_GROUP = ['SSH']
     #NeCTAR Ubuntu 16.04 LTS (Xenial) amd64 (pre-installed murano-agent)
 IMAGE = 'ami-c163b887'

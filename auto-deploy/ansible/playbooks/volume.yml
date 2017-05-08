@@ -21,4 +21,9 @@
       src: /dev/vdb
       fstype: ext4
       state: mounted
-      
+
+  - name: create mount dir
+    file:
+      path: /mnt/storage
+      state: directory
+      mode: 0777

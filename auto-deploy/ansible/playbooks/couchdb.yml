@@ -1,14 +1,16 @@
 ---
 - name: setup CouchDB
-  hosts: DB
+  hosts: harvester:analyser
   remote_user: ubuntu
   become: yes
 
   tasks:
   - name: install dependencies
-    apt: name={{ item }} state=present
+    apt: 
+      name: "{{ item }}"
+      state: present
     with_items:
-    - curl
+      - curl
 
   - name: add repository for couch
     apt_repository:
@@ -21,9 +23,20 @@
       update_cache: yes
       state: present
 
+  - name: secure file ownerships
+    command: "{{ item }}"
+    with_items:
+      - sudo chown -R couchdb:couchdb /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+      - sudo chmod -R 0777 /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+
   - name: Restart CouchDB service
     systemd:
       state: restarted
       daemon_reload: yes
       name: couchdb
-      
+
+  - name: change working directory
+    command: "{{ item }}"
+    with_items:
+      - curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
+      - curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
