@@ -29,7 +29,7 @@ Script: ```CreateInstance.py```
     sudo mkdir /mnt/storage
     sudo mount /dev/vdb /mnt/storage
     ```
-- install CouchDB
+- _install CouchDB 1.6_
 - install PostgreSQL
 - change WD of both onto volume
 

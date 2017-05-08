@@ -30,7 +30,7 @@ $ pip install virtualenv
 $ pip install virtualenvwrapper
 ```
 
-To complete the virtualenv setup process, put the following in you ~/.bash_profile
+To complete the virtualenv setup process, put the following in your ~/.bash_profile
 ```bash
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh

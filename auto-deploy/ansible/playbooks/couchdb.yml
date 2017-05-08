@@ -1,25 +1,29 @@
 ---
-- name: setupDatabase
-  hosts: dbservers
+- name: setup CouchDB
+  hosts: DB
   remote_user: ubuntu
-  become_method: sudo
-  become_user: root
   become: yes
 
   tasks:
   - name: install dependencies
     apt: name={{ item }} state=present
     with_items:
-    - git
     - curl
 
   - name: add repository for couch
     apt_repository:
       repo: ppa:couchdb/stable
       state: present
+  
+  - name: install CouchDB
+    apt: 
+      name: couchdb
+      update_cache: yes
+      state: present
 
-  - name: install couchdb
-    apt: name=couchdb state=present
-# couchdb is now installed
-
+  - name: Restart CouchDB service
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: couchdb
       
