@@ -14,3 +14,4 @@ six==1.10.0
 SQLAlchemy==1.1.9
 tweepy==3.5.0
 TwitterAPI==2.4.5
+vaderSentiment==2.5

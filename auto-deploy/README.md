@@ -45,20 +45,48 @@ Script: ```CreateInstance.py```
     curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
     ```
 - _install PostgreSQL_  [harvester]
-    - DB: ```public```
-    - UN: ```amost```
-    - PW: ```amostsecretpassword```
+    - DB: ```amost_twitter```
+    - UN: ```twitter```
+    - PW: ```amost-1```
 
 - download harvester appl from GitHub   [harvester]
     ```bash
-    git clone <repo>
-    ```
+    sudo apt-get install python3-pip
+    sudo pip install virtualenv
+    
+    git clone https://github.com/martindavid/amost-twitter-analytics.git
+    # This needs a username/pass as repo is private
+    # Use SSH key
 
-    - launch harvester
+    cd amost-twitter-analytics/twitter-harvester
+    sudo pip install -r requirements.txt
+    
+    # sudo -u postgres createdb amost_twitter
+    # sudo -u postgres createuser -P -s -e twitter
+    #This requires a password; maybe not needed if Ansible works
+
+    
+    sudo -u postgres psql -f db_structure/create.sql amost_twitter
+    sudo -u postgres psql -f db_structure/keyword.sql amost_twitter
+    sudo -u postgres psql -f db_structure/twitter_token.sql amost_twitter
+
+- fill up send .env file for twitter-harvester
+    
+<br><br><br><br><br>
+
+- launch harvester
     ```bash
     nohup <file>.py &
     ```
 - setup **replication** between CouchDB on ```harvester``` and ```analyser```
-- install ```htttpd``` on webserver
+
+- install ```nginx``` on webserver
+    ```bash
+    # Install
+    sudo apt-get install nginx
+
+    # Set firewall rules
+    sudo ufw allow 'Nginx HTTP'
+    ```
 
 _Italics_ refer to tasks that have been implemented.

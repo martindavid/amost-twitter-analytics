@@ -32,9 +32,9 @@
   gather_facts: no
 
   vars:
-    dbname: public
-    dbuser: amost
-    dbpassword: amostsecretpassword
+    dbname: amost_twitter
+    dbuser: twitter
+    dbpassword: amost-1
 
   tasks:
   - name: ensure database is created
