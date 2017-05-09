@@ -1,9 +1,9 @@
 from os.path import join, dirname
 import os
-from dotenv import load_dotenv
+from dotenv import Dotenv
 
 dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+Dotenv(dotenv_path)
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 
