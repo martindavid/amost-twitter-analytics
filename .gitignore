@@ -94,3 +94,5 @@ ENV/
 
 # Personal test files
 /auto-deploy/boto/AbhiSettings.py
+
+auto-deploy/ansible/files/git\.pem

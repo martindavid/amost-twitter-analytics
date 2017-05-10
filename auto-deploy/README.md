@@ -1,11 +1,18 @@
 ## TODO
-- add provisioning of all 3 machines with the right software for each.
+- provision webserver
+- add couchDB to analyser
+- add analyser scripts to analyser
+
 - Change instance flavour from ```m2.tiny``` to ```m2.medium```.
+- Add option to either provision from scratch; or just the harvester
 ---
 
-Ensure that:
+**Ensure** that:
 - Private key exists: ```~/.ssh/amost-1.pem```
 - It is added to the SSH agent: ```ssh-agent bash; ssh-add ~/.ssh/amost-1.pem```
+- Python version 3.5 (or more) is [installed](https://stackoverflow.com/questions/38393054/installing-python-3-5-via-apt-get) [for Ansible to [work](https://github.com/ansible/ansible/issues/23680)]
+    - Python version 3.4 (or any less 3.x) is disabled [else Ansbible may try to use it]
+- Ansible version 2.3 (or more) is [installed](https://stackoverflow.com/questions/18385925/error-when-running-ansible-playbook)
 
 Run ```./deploy.sh```
 ===
@@ -49,35 +56,33 @@ Script: ```CreateInstance.py```
     - UN: ```twitter```
     - PW: ```amost-1```
 
-- download harvester appl from GitHub   [harvester]
+- _download harvester appl from [GitHub](https://github.com/martindavid/amost-twitter-analytics)   [harvester]_
     ```bash
-    sudo apt-get install python3-pip
+    sudo apt-get install python-pip
     sudo pip install virtualenv
     
     git clone https://github.com/martindavid/amost-twitter-analytics.git
-    # This needs a username/pass as repo is private
-    # Use SSH key
+    # Use SSH key ~/.ssh/git.pem
 
     cd amost-twitter-analytics/twitter-harvester
     sudo pip install -r requirements.txt
     
+    # Create correct DB in PSQL
     # sudo -u postgres createdb amost_twitter
     # sudo -u postgres createuser -P -s -e twitter
-    #This requires a password; maybe not needed if Ansible works
-
     
+    # Set up PSQL
     sudo -u postgres psql -f db_structure/create.sql amost_twitter
     sudo -u postgres psql -f db_structure/keyword.sql amost_twitter
     sudo -u postgres psql -f db_structure/twitter_token.sql amost_twitter
 
-- fill up send .env file for twitter-harvester
-    
-<br><br><br><br><br>
+- _send .env file for database variables needed by twitter-harvester'_
 
-- launch harvester
+- _launch harvester_
     ```bash
-    nohup <file>.py &
+    nohup python cli.py stream GROUP1 &
     ```
+
 - setup **replication** between CouchDB on ```harvester``` and ```analyser```
 
 - install ```nginx``` on webserver

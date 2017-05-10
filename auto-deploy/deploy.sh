@@ -23,9 +23,19 @@ echo "Waiting for 1 minute for the provisioning dust to settle..."
 sleep 60
 
 # Ping all hosts in new group, without checking new keys
-ANSIBLE_HOST_KEY_CHECKING=False ansible all -i ./ansible/hosts -m ping
+sudo ANSIBLE_HOST_KEY_CHECKING=False ansible all -i ./ansible/hosts -m ping
 
 # Mount volume storage
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ./ansible/hosts ./ansible/playbooks/volume.yml
-ansible-playbook -i ./ansible/hosts ./ansible/playbooks/couchdb.yml
-ansible-playbook -i ./ansible/hosts ./ansible/playbooks/postgre.yml
+sudo ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ./ansible/hosts ./ansible/playbooks/volume.yml
+
+# Install CouchDB
+sudo ansible-playbook -i ./ansible/hosts ./ansible/playbooks/couchdb.yml
+
+# Install PostgreSQL
+sudo ansible-playbook -i ./ansible/hosts ./ansible/playbooks/postgre.yml
+
+# Set up and launch harvester from GitHub repo
+sudo ansible-playbook -i ./ansible/hosts ./ansible/playbooks/harvester.yml
+
+# Set up Webserver
+
