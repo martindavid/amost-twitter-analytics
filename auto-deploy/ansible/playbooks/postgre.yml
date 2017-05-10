@@ -48,3 +48,12 @@
   
   - name: ensure no other user can access the database
     postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
+
+  - name: grant access to public tables
+    postgresql_privs:
+      database: "{{dbname}}"
+      privs: all
+      objs: ALL_IN_SCHEMA
+      schema: public
+      roles: twitter
+      grant_option: yes

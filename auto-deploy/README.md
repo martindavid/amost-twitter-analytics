@@ -9,8 +9,8 @@
 **Ensure** that:
 - Private key exists: ```~/.ssh/amost-1.pem```
 - It is added to the SSH agent: ```ssh-agent bash; ssh-add ~/.ssh/amost-1.pem```
-- Python version 3.5 (or more) is [installed](https://stackoverflow.com/questions/38393054/installing-python-3-5-via-apt-get) [for Ansible to [work](https://github.com/ansible/ansible/issues/23680)]
-    - Python version 3.4 (or any less 3.x) is disabled [else Ansbible may try to use it]
+- Python version [3.6](https://www.python.org/downloads/release/python-361/) is installed (for Ansible to [work](https://github.com/ansible/ansible/issues/23680)
+    - ensure [zlib is installed](https://stackoverflow.com/questions/12344970/building-python-from-source-with-zlib-support) before making python
 - Ansible version 2.3 (or more) is [installed](https://stackoverflow.com/questions/18385925/error-when-running-ansible-playbook)
 
 Run ```./deploy.sh```
@@ -49,7 +49,7 @@ Script: ```CreateInstance.py```
     sudo chmod -R 0777 /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
     sudo systemctl restart couchdb
     ```
-    - _change WD of CouchDB to volume_
+    - _change WD of CouchDB to volume and remove localhost binding_
     ```bash
     curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
     curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
@@ -92,7 +92,6 @@ Script: ```CreateInstance.py```
 - setup **replication** between CouchDB on ```harvester``` and ```analyser```
     ```bash
     
-
     ```
 ---
 #### webserver
@@ -131,11 +130,14 @@ Script: ```CreateInstance.py```
     export NODE_ENV='production'
 
     # Start webserver
+    export NODE_ENV='development'
     npm install
-    cd client
-    npm install
+    cd client && npm install
     npm run build
     cd ..
+    export NODE_ENV='production'
+    
+    npm install pm2 -g
     npm run server
     ```
 
