@@ -1,0 +1,20 @@
+---
+- name: Install webserver/nginx
+  hosts: webserver
+  gather_facts: no
+
+  tasks:
+    name: Install nginx
+    become: yes
+    apt:
+      name: nginx
+      update_cache: yes
+      state: latest
+
+    name: update firewall rules for HTTP
+    shell: sudo ufw allow 'Nginx HTTP'
+
+    name: start nginx
+    service:
+      name: nginx
+      state: started

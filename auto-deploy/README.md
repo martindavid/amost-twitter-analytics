@@ -1,6 +1,5 @@
 ## TODO
 - provision webserver
-- add couchDB to analyser
 - add analyser scripts to analyser
 
 - Change instance flavour from ```m2.tiny``` to ```m2.medium```.
@@ -30,6 +29,8 @@ Script: ```CreateInstance.py```
  - _retrieve IP address and add to Ansible hosts file_
     
 ### **Ansible**
+---
+#### ALL
 - _ping all hosts_
 - _format + mount volume_ [all]
     ```bash
@@ -37,7 +38,9 @@ Script: ```CreateInstance.py```
     sudo mkdir /mnt/storage
     sudo mount /dev/vdb /mnt/storage
     ```
-- _install CouchDB 1.6_ [harvester + analyser]
+---
+#### harvester
+- _install CouchDB 1.6_
     ```bash
     sudo add-apt-repository ppa:couchdb/stable
     sudo apt-get install couchdb
@@ -82,8 +85,12 @@ Script: ```CreateInstance.py```
     ```bash
     nohup python cli.py stream GROUP1 &
     ```
-
+---
+#### analyser
+- install couchDB [already done above via the couchdb playbook]
 - setup **replication** between CouchDB on ```harvester``` and ```analyser```
+---
+#### webserver
 
 - install ```nginx``` on webserver
     ```bash
@@ -92,6 +99,39 @@ Script: ```CreateInstance.py```
 
     # Set firewall rules
     sudo ufw allow 'Nginx HTTP'
+    ```
+- install ```nodejs```
+    
+    ```bash
+    # Add correct repo to apt
+    curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+    sudo bash nodesource_setup.sh
+    
+    # install node.js
+    sudo apt-get install nodejs
+
+    # install npm
+    sudo npm install -g express
+    ```
+
+- copy [web app](https://github.com/martindavid/amost-twitter-web)
+
+- install dependencies for app
+    ```bash
+    # Export env variables
+    export COUCHDB_TWEETS='http://127.0.0.1:15984/tweets/'
+    export COUCHDB_TWEET_WORDS='http://127.0.0.1:15984/twitter-words/'
+    export COUCHDB_TWEET_HASHTAGS='http://127.0.0.1:15984/twitter-hashtags/'
+    export COUCHDB_TWEET_USERS='http://127.0.0.1:15984/twitter-users/'
+    export NODE_ENV='production'
+
+    # Start webserver
+    npm install
+    cd client
+    npm install
+    npm run build
+    cd ..
+    npm run server
     ```
 
 _Italics_ refer to tasks that have been implemented.

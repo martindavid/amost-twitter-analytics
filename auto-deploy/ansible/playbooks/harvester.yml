@@ -1,4 +1,6 @@
-- hosts: harvester
+---
+- name: Install harvester and its dependencies
+  hosts: harvester
   gather_facts: no
 
   tasks:
