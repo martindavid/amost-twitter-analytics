@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+
+#/////!/usr/bin/env python3
 
 """
 Boto script to provision an instance on NeCTAR Research Cloud

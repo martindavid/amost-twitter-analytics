@@ -35,8 +35,9 @@
       daemon_reload: yes
       name: couchdb
 
-  - name: change working directory
+  - name: change working directory and remove localhost binding
     command: "{{ item }}"
     with_items:
       - curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
       - curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
+      - curl -X PUT http://localhost:5984/_config/httpd/bind_address -d '"0.0.0.0"'

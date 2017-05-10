@@ -53,6 +53,7 @@ Script: ```CreateInstance.py```
     ```bash
     curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
     curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
+    curl -X PUT http://localhost:5984/_config/httpd/bind_address -d '"0.0.0.0"'
     ```
 - _install PostgreSQL_  [harvester]
     - DB: ```amost_twitter```
@@ -87,8 +88,12 @@ Script: ```CreateInstance.py```
     ```
 ---
 #### analyser
-- install couchDB [already done above via the couchdb playbook]
+- _install couchDB [done above via the couchdb playbook]_
 - setup **replication** between CouchDB on ```harvester``` and ```analyser```
+    ```bash
+    
+
+    ```
 ---
 #### webserver
 
