@@ -1,13 +1,7 @@
-##
-# Example Ansible playbook that uses the PostgreSQL module.
-#
-# This installs PostgreSQL on an Ubuntu system, creates a database called
-# "myapp" and a user called "django" with password "mysupersecretpassword"
-# with access to the "myapp" database.
-#
-# Source: https://github.com/ansible/ansible-examples/blob/master/language_features/postgresql.yml
+# Adapted from: https://github.com/ansible/ansible-examples/blob/master/language_features/postgresql.yml
 ---
-- hosts: harvester
+- name: Install PostgreSQL
+  hosts: harvester
   become: yes
   gather_facts: no
 

@@ -1,17 +1,10 @@
-## TODO
-- provision webserver
-- add analyser scripts to analyser
-
-- Change instance flavour from ```m2.tiny``` to ```m2.medium```.
-- Add option to either provision from scratch; or just the harvester
----
-
 **Ensure** that:
 - Private key exists: ```~/.ssh/amost-1.pem```
 - It is added to the SSH agent: ```ssh-agent bash; ssh-add ~/.ssh/amost-1.pem```
-- Python version [3.6](https://www.python.org/downloads/release/python-361/) is installed (for Ansible to [work](https://github.com/ansible/ansible/issues/23680)
+- Python version [3.6](https://www.python.org/downloads/release/python-361/) is installed (for Ansible to [work](https://github.com/ansible/ansible/issues/23680))
     - ensure [zlib is installed](https://stackoverflow.com/questions/12344970/building-python-from-source-with-zlib-support) before making python
-- Ansible version 2.3 (or more) is [installed](https://stackoverflow.com/questions/18385925/error-when-running-ansible-playbook)
+- Ansible version 2.3 (or more) is [installed] from [source](https://github.com/ansible/ansible) and the environment [configured](https://github.com/ahes/ansible-filter-plugins/issues/2)
+    - $ ```source hacking/env-setup```
 
 Run ```./deploy.sh```
 ===
@@ -45,7 +38,7 @@ Script: ```CreateInstance.py```
     sudo add-apt-repository ppa:couchdb/stable
     sudo apt-get install couchdb
 
-    sudo chown -R couchdb:couchdb /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+    sudo chown -R couchdb:couchdb /usr/exibin/couchdb /etc/couchdb /usr/share/couchdb
     sudo chmod -R 0777 /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
     sudo systemctl restart couchdb
     ```
@@ -79,7 +72,7 @@ Script: ```CreateInstance.py```
     sudo -u postgres psql -f db_structure/create.sql amost_twitter
     sudo -u postgres psql -f db_structure/keyword.sql amost_twitter
     sudo -u postgres psql -f db_structure/twitter_token.sql amost_twitter
-
+    sudo -u postgres psql -d amost_twitter -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO twitter;"
 - _send .env file for database variables needed by twitter-harvester'_
 
 - _launch harvester_
@@ -87,14 +80,15 @@ Script: ```CreateInstance.py```
     nohup python cli.py stream GROUP1 &
     ```
 ---
-#### analyser
-- _install couchDB [done above via the couchdb playbook]_
-- setup **replication** between CouchDB on ```harvester``` and ```analyser```
+#### replica server
+- _setup **replication** between CouchDB on ```harvester``` and ```replica```_
     ```bash
-    
+    # Insert correct IP of replica VM
+    curl -X POST localhost:5984/_replicate -d '{"source":"tweets", "target":"http://<replica_server>:5984/tweets", "continuous":true}' -H "Content-Type:application/json"
     ```
 ---
-#### webserver
+
+#### analyser + webserver
 
 - install ```nginx``` on webserver
     ```bash
@@ -127,7 +121,6 @@ Script: ```CreateInstance.py```
     export COUCHDB_TWEET_WORDS='http://127.0.0.1:15984/twitter-words/'
     export COUCHDB_TWEET_HASHTAGS='http://127.0.0.1:15984/twitter-hashtags/'
     export COUCHDB_TWEET_USERS='http://127.0.0.1:15984/twitter-users/'
-    export NODE_ENV='production'
 
     # Start webserver
     export NODE_ENV='development'
@@ -138,7 +131,8 @@ Script: ```CreateInstance.py```
     export NODE_ENV='production'
     
     npm install pm2 -g
-    npm run server
+    pm2 start server.js
+    #npm run server
     ```
-
-_Italics_ refer to tasks that have been implemented.
+- copy analyser scripts
+---

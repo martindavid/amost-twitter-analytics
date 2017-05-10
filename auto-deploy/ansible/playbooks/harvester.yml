@@ -50,6 +50,12 @@
       - sudo -u postgres psql -f db_structure/create.sql amost_twitter
       - sudo -u postgres psql -f db_structure/keyword.sql amost_twitter
       - sudo -u postgres psql -f db_structure/twitter_token.sql amost_twitter
+      - sudo -u postgres psql -d amost_twitter -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO twitter;"
+
+  - name: set up replication
+    shell: "{{item}}"
+    with_items:
+      - curl -X POST localhost:5984/_replicate -d '{"source":"tweets", "target":"http://{{replica_server}}:5984/tweets", "continuous":true}' -H "Content-Type:application/json"
 
   - name: start harvester [G1]
     shell: nohup python ~/amost-twitter-analytics/twitter-harvester/cli.py stream GROUP1 &
