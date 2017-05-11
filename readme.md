@@ -6,4 +6,4 @@
 - [Harvester](twitter-harvester/readme.md)
 - [(extra) Analytics](extraanalytics/readme.txt)
 
-[Video]((https://vimeo.com/216946853)) showcasing the project:
+[Video](https://vimeo.com/216946853) showcasing the project.
