@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source ~/ansible/hacking/env-setup
+ansible --version
+echo "Ansible is installed and working."
+
 echo "Starting auto-deployment..."
 
 # # Spin up DB server
@@ -23,7 +27,7 @@ echo "Harvester server created."
 echo -e "\n[db_replica]" >> ./ansible/hosts
 # Launch instance, create volume, attach volume...
 # ...extract IP addr from stdout and store for later
-python3 ./boto/CreateInstance.py | grep -Po '(\d{1,3}\.){3}\d{1,3}' >> replica_ip
+python3 ./boto/CreateInstance.py | grep -Po '(\d{1,3}\.){3}\d{1,3}' > replica_ip
 
 # keep track of replica server's IP for later use
 IP=$(cat replica_ip)
