@@ -1,0 +1,44 @@
+---
+- name: setup CouchDB
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+  - name: install dependencies
+    apt: 
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - curl
+
+  - name: add repository for couch
+    apt_repository:
+      repo: ppa:couchdb/stable
+      state: present
+  
+  - name: install CouchDB
+    apt: 
+      name: couchdb
+      update_cache: yes
+      state: present
+
+  - name: secure file ownerships
+    command: "{{ item }}"
+    with_items:
+      - sudo chown -R couchdb:couchdb /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+      - sudo chmod -R 0777 /usr/bin/couchdb /etc/couchdb /usr/share/couchdb
+
+  - name: Restart CouchDB service
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: couchdb
+
+  - name: change working directory, remove localhost binding, add empty DB
+    command: "{{ item }}"
+    with_items:
+      - curl -X PUT http://localhost:5984/_config/couchdb/database_dir -d '"/mnt/storage/couchdb"'
+      - curl -X PUT http://localhost:5984/_config/couchdb/view_index_dir -d '"/mnt/storage/couchdb"'
+      - curl -X PUT http://localhost:5984/_config/httpd/bind_address -d '"0.0.0.0"'
+      - curl -X PUT http://localhost:5984/tweets
