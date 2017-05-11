@@ -24,16 +24,15 @@ try:
 except:
     user = server["twitter-users"]
 
-today = datetime.date.today()
-today.strftime('%Y/%-m/%-d')
+date_for_analysis = datetime.date.today() - 1
+date_for_analysis.strftime('%Y/%-m/%-d')
 
-for date in date_list:
-    # fetch data for individual date
-    log.info("START - Process data for %s" % date)
-    view_data = []
-    for row in db.view('_design/analytics/_view/tweets-victoria', startkey=date, endkey=date):
-        view_data.append(row.value)
+# fetch data for individual date
+log.info("START - Process data for %s" % date_for_analysis)
+view_data = []
+for row in db.view('_design/analytics/_view/tweets-victoria', startkey=date_for_analysis, endkey=date_for_analysis):
+    view_data.append(row.value)
 
-    analytics = TweetAnalytics(date, view_data, db, hashtags, words, user)
-    analytics.process_data()
-    log.info("END - Process data for %s" % date)
+analytics = TweetAnalytics(date_for_analysis, view_data, db, hashtags, words, user)
+analytics.process_data()
+log.info("END - Process data for %s" % date_for_analysis)

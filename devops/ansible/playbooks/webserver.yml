@@ -1,0 +1,78 @@
+---
+- name: Install webserver/nginx
+  hosts: analyser_web
+  gather_facts: no
+
+  tasks:
+  - name: Install curl
+    become: yes
+    apt:
+      name: curl
+      update_cache: yes
+      state: latest
+
+  - name: Install nginx
+    become: yes
+    apt:
+      name: nginx
+      state: latest
+
+  - name: update firewall rules for HTTP
+    become: yes
+    shell: ufw allow 'Nginx HTTP'
+
+  - name: start nginx
+    service:
+      name: nginx
+      state: started
+
+  - name: add nodejs repo
+    become: yes
+    shell: "{{item}}"
+    with_items:
+      - curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+      - bash nodesource_setup.sh
+
+  - name: Install nodejs
+    become: yes
+    apt:
+      name: nodejs
+      state: latest
+
+  - name: install npm
+    become: yes
+    shell: npm install -g express
+
+  - name: copy private key for GitHub access
+    copy:
+      src: /mnt/d/GDrive/Docs/2017/Code/amost-twitter-analytics/auto-deploy/ansible/files/git.pem
+      dest: ~/.ssh/id_rsa
+      owner: ubuntu
+      group: ubuntu
+      mode: 0700
+  
+  - name: clone harvester git repo
+    git:
+      repo: git@github.com:martindavid/amost-twitter-web.git
+      dest: /home/ubuntu/amost-twitter-web
+      accept_hostkey: yes
+
+  - name: export env variables
+    become: yes
+    shell: "{{item}}"
+    with_items:
+      - cd /home/ubuntu/amost-twitter-web
+      - export COUCHDB_TWEETS='http://127.0.0.1:15984/tweets/'
+      - export COUCHDB_TWEET_WORDS='http://127.0.0.1:15984/twitter-words/'
+      - export COUCHDB_TWEET_HASHTAGS='http://127.0.0.1:15984/twitter-hashtags/'
+      - export COUCHDB_TWEET_USERS='http://127.0.0.1:15984/twitter-users/'
+      - export NODE_ENV='development'
+      - npm install
+      - cd client 
+      - npm install
+      - npm run build
+      - cd ..
+      - export NODE_ENV='production'
+      - npm install pm2 -g
+      - pm2 start server.js
+
