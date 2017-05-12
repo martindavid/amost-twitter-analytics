@@ -8,6 +8,7 @@ load_dotenv(dotenv_path)
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 
 # PostgreSql Configuration
+PG_DB_HOST = os.environ.get('PG_DB_HOST')
 PG_DB_NAME = os.environ.get('PG_DB_NAME')
 PG_DB_USER = os.environ.get('PG_DB_USER')
 PG_DB_PASSWORD = os.environ.get('PG_DB_PASSWORD')

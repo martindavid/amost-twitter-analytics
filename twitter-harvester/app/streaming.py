@@ -65,7 +65,7 @@ class TwitterStreamRunner(object):
 
     def __init__(self, group_name):
         database = DB(settings.PG_DB_USER,
-                      settings.PG_DB_PASSWORD, settings.PG_DB_NAME)
+                      settings.PG_DB_PASSWORD, settings.PG_DB_NAME, settings.PG_DB_HOST)
         database.connect()
 
         keyword = Keyword(database.con, database.meta)
