@@ -36,11 +36,9 @@ class TwitterSearch(object):
 
         """Set tweepy api object and authentication"""
         token = token.find_by_group(group_name)
-        auth = tweepy.OAuthHandler(
-            token["consumer_key"], token["consumer_secret"])
-        auth.set_access_token(token["access_token"], token["access_token_secret"])
+        auth = tweepy.AppAuthHandler(token["consumer_key"], token["consumer_secret"])
 
-        self.api = tweepy.API(auth)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
         self.keyword = keyword
         self.keyword_list = keyword.find_by_group(group_name)
         self.tw_store = TweetStore(settings.COUCHDB_DB, settings.COUCHDB_SERVER)

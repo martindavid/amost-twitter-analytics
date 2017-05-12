@@ -73,8 +73,7 @@ class TwitterStreamRunner(object):
 
         # Set tweepy api object and authentication
         token = token.find_by_group(group_name)
-        self.auth = tweepy.OAuthHandler(
-            token["consumer_key"], token["consumer_secret"])
+        self.auth = tweepy.OAuthHandler(token["consumer_key"], token["consumer_secret"])
         self.auth.set_access_token(token["access_token"], token["access_token_secret"])
 
         self.api = tweepy.API(self.auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
@@ -94,7 +93,7 @@ class TwitterStreamRunner(object):
         while loop:
             try:
                 log.info("Start stream tweets data")
-                stream.filter(locations=AUS_GEO_CODE)
+                stream.filter(track=self.keywords, locations=AUS_GEO_CODE)
                 loop = False
                 log.info("End stream tweets data")
             except Exception as e:

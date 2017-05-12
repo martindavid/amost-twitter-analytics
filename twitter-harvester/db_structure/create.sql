@@ -8,8 +8,7 @@ create table keyword
 	max_id bigint default '-1'::integer,
 	since_id bigint default '-1'::integer,
 	updated_at timestamp default now()
-)
-;
+);
 
 create table twitter_token
 (
@@ -21,5 +20,4 @@ create table twitter_token
 	access_token varchar(100),
 	access_token_secret varchar(100),
 	keyword_group varchar(100)
-)
-;
+);
