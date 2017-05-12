@@ -41,6 +41,8 @@ class TweetStore(object):
             try:
                 data = self._construct_tweet_data(json_data)
                 self.dbase.save(data)
+            except couchdb.http.ResourceConflict:
+                pass
             except Exception as e:
                 log.error(e)
 

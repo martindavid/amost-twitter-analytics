@@ -93,7 +93,7 @@ class TwitterStreamRunner(object):
         while loop:
             try:
                 log.info("Start stream tweets data")
-                stream.filter(track=self.keywords, locations=AUS_GEO_CODE)
+                stream.filter(track=self.keywords, locations=AUS_GEO_CODE, stall_warnings=True)
                 loop = False
                 log.info("End stream tweets data")
             except Exception as e:
