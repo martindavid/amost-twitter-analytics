@@ -9,7 +9,7 @@ database = DB(settings.PG_DB_USER,
               settings.PG_DB_PASSWORD, settings.PG_DB_NAME)
 database.connect()
 
-server = couchdb.Server(url='http://127.0.0.1:15984/')
+server = couchdb.Server(url=settings.COUCHDB_SERVER)
 db = server['tweets']
 
 # get twitter-hashtags couchdb instance
