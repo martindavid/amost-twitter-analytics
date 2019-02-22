@@ -8,7 +8,7 @@ psycopg2==2.7.1
 pyparsing==2.2.0
 python-dotenv==0.6.4
 raven==6.0.0
-requests==2.13.0
+requests==2.21.0
 requests-oauthlib==0.8.0
 six==1.10.0
 SQLAlchemy==1.1.9
